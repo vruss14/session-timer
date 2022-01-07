@@ -13,43 +13,65 @@ class Container extends React.Component {
         currentType: 'Session',
         timerStatus: 'Paused',
       }
-
-      this.incrementValue = this.incrementValue.bind(this);
-      this.decrementValue = this.decrementValue.bind(this);
+      this.incrementBreak = this.incrementBreak.bind(this);
+      this.decrementBreak = this.decrementBreak.bind(this);
+      this.incrementSession = this.incrementSession.bind(this);
+      this.decrementSession = this.decrementSession.bind(this);
       this.minutesAndSeconds = this.minutesAndSeconds.bind(this);
       this.handleStartAndStop = this.handleStartAndStop.bind(this);
+      this.resetTimer = this.resetTimer.bind(this);
     }
 
-    incrementValue(type) {
-        if(type === 1 && this.state.breakLength < 60 && this.state.currentType === 'Break') {
+    incrementBreak() {
+        if(this.state.timerStatus === 'Active') {
+            return;
+        }
+
+        if(this.state.breakLength < 60 && this.state.currentType === 'Break') {
             this.setState({
                 breakLength: this.state.breakLength + 1,
                 timerCount: ((this.state.breakLength + 1) * 60)
-            });
-        } else if(type === 2 && this.state.sessionLength < 60 && this.state.currentType === 'Session') {
-            this.setState({
-                sessionLength: this.state.sessionLength + 1,
-                timerCount: ((this.state.sessionLength + 1) * 60)
-            });
-        } else {
-            return;
-        }
+            })
+        };
     }
 
-    decrementValue(type) {
-        if(type === 1 && this.state.breakLength > 0 && this.state.currentType === 'Break') {
+    decrementBreak() {
+        if(this.state.timerStatus === 'Active') {
+            return;
+        }
+
+        if(this.state.breakLength >= 2 && this.state.currentType === 'Break') {
             this.setState({
                 breakLength: this.state.breakLength - 1,
                 timerCount: ((this.state.breakLength - 1) * 60)
-            });        
-        } else if(type === 2 && this.state.sessionLength > 0 && this.state.currentType === 'Session') {
+            })
+        };
+    }
+
+    incrementSession() {
+        if(this.state.timerStatus === 'Active') {
+            return;
+        }
+
+        if(this.state.sessionLength < 60 && this.state.currentType === 'Session') {
+            this.setState({
+                sessionLength: this.state.sessionLength + 1,
+                timerCount: ((this.state.sessionLength + 1) * 60)
+            })
+        };
+    }
+
+    decrementSession() {
+        if(this.state.timerStatus === 'Active') {
+            return;
+        }
+
+        if(this.state.sessionLength >= 2 && this.state.currentType === 'Session') {
             this.setState({
                 sessionLength: this.state.sessionLength - 1,
                 timerCount: ((this.state.sessionLength - 1) * 60)
-            });        
-        } else {
-            return;
-        }
+            })
+        };
     }
 
     minutesAndSeconds(count) {
@@ -85,6 +107,19 @@ class Container extends React.Component {
         }
     }
 
+    resetTimer() {
+        if(this.state.timerStatus === 'Active') {
+            clearInterval(this.timer);
+        }
+        this.setState({
+            breakLength: 5,
+            sessionLength: 25,
+            timerCount: 25 * 60,
+            currentType: 'Session',
+            timerStatus: 'Paused',
+        })
+    }
+
     componentWillUnmount() {
         clearInterval(this.timer);
     }
@@ -109,7 +144,7 @@ class Container extends React.Component {
                             <h2 id="break-label">Break Length</h2>
 
                             <div className="icons-container d-flex justify-content-evenly align-items-center">
-                                <svg onClick={() => this.decrementValue(1)} id="break-decrement" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16" style={rotated}>
+                                <svg onClick={this.decrementBreak} id="break-decrement" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16" style={rotated}>
                                     <path d="M16 8A8 8 0 1 0 0 8a8 8 0 0 0 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"/>
                                 </svg>
 
@@ -117,7 +152,7 @@ class Container extends React.Component {
                                     <p id="break-length" className="mb-0">{this.state.breakLength}</p>
                                 </div>
 
-                                <svg onClick={() => this.incrementValue(1)} id="break-increment" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16">
+                                <svg onClick={this.incrementBreak} id="break-increment" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16">
                                     <path d="M16 8A8 8 0 1 0 0 8a8 8 0 0 0 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"/>
                                 </svg>
                             </div>
@@ -129,7 +164,7 @@ class Container extends React.Component {
                             <h2 id="session-label">Session Length</h2>
 
                             <div className="icons-container d-flex justify-content-evenly align-items-center">
-                                <svg onClick={() => this.decrementValue(2)} id="session-decrement" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16" style={rotated}>
+                                <svg onClick={this.decrementSession} id="session-decrement" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16" style={rotated}>
                                     <path d="M16 8A8 8 0 1 0 0 8a8 8 0 0 0 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"/>
                                 </svg>
 
@@ -137,7 +172,7 @@ class Container extends React.Component {
                                     <p id="session-length" className="mb-0">{this.state.sessionLength}</p>
                                 </div>
 
-                                <svg onClick={() => this.incrementValue(2)} id="session-increment" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16">
+                                <svg onClick={this.incrementSession} id="session-increment" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16">
                                     <path d="M16 8A8 8 0 1 0 0 8a8 8 0 0 0 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"/>
                                 </svg>
                             </div>
@@ -162,7 +197,7 @@ class Container extends React.Component {
                         </svg>
                         }
 
-                        <svg id="reset" xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" className="bi bi-alarm-fill" viewBox="0 0 16 16" style={smallMargins}>
+                        <svg id="reset" onClick={this.resetTimer} xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" className="bi bi-alarm-fill" viewBox="0 0 16 16" style={smallMargins}>
                             <path d="M6 .5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1H9v1.07a7.001 7.001 0 0 1 3.274 12.474l.601.602a.5.5 0 0 1-.707.708l-.746-.746A6.97 6.97 0 0 1 8 16a6.97 6.97 0 0 1-3.422-.892l-.746.746a.5.5 0 0 1-.707-.708l.602-.602A7.001 7.001 0 0 1 7 2.07V1h-.5A.5.5 0 0 1 6 .5zm2.5 5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9V5.5zM.86 5.387A2.5 2.5 0 1 1 4.387 1.86 8.035 8.035 0 0 0 .86 5.387zM11.613 1.86a2.5 2.5 0 1 1 3.527 3.527 8.035 8.035 0 0 0-3.527-3.527z"/>
                         </svg>
 
