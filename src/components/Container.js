@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 function Container() {
 
@@ -9,6 +9,31 @@ function Container() {
     const smallMargins = {
         marginLeft: `2vw`,
         marginRight: `2vh`
+    }
+
+    const [state, setState] = useState({
+        breakLength: 5,
+        sessionLength: 25
+    });
+
+    function incrementValue(type) {
+        if(type === 1 && state.breakLength <=60) {
+            setState({...state, breakLength: state.breakLength + 1});
+        } else if(type === 2 && state.sessionLength <= 60) {
+            setState({...state, sessionLength: state.sessionLength + 1});
+        } else {
+            return;
+        }
+    }
+
+    function decrementValue(type) {
+        if(type === 1 && state.breakLength >= 0) {
+            setState({...state, breakLength: state.breakLength - 1});
+        } else if(type === 2 && state.sessionLength >= 0) {
+            setState({...state, sessionLength: state.sessionLength - 1});
+        } else {
+            return;
+        }
     }
 
   return (
@@ -22,15 +47,15 @@ function Container() {
                             <h2 id="break-label">Break Length</h2>
 
                             <div className="icons-container d-flex justify-content-evenly align-items-center">
-                                <svg id="break-decrement" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16" style={rotated}>
+                                <svg onClick={() => decrementValue(1)} id="break-decrement" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16" style={rotated}>
                                     <path d="M16 8A8 8 0 1 0 0 8a8 8 0 0 0 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"/>
                                 </svg>
 
                                 <div className="d-flex justify-content-center align-items-center">
-                                    <p id="break-length" className="mb-0">5</p>
+                                    <p id="break-length" className="mb-0">{state.breakLength}</p>
                                 </div>
 
-                                <svg id="break-increment" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16">
+                                <svg onClick={() => incrementValue(1)} id="break-increment" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16">
                                     <path d="M16 8A8 8 0 1 0 0 8a8 8 0 0 0 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"/>
                                 </svg>
                             </div>
@@ -42,16 +67,16 @@ function Container() {
                             <h2 id="session-label">Session Length</h2>
 
                             <div className="icons-container d-flex justify-content-evenly align-items-center">
-                                <svg id="session-decrement" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16" style={rotated}>
+                                <svg onClick={() => decrementValue(2)} id="session-decrement" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16" style={rotated}>
                                     <path d="M16 8A8 8 0 1 0 0 8a8 8 0 0 0 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"/>
                                 </svg>
 
                                 <div className="d-flex justify-content-center align-items-center">
-                                    <p id="session-length" className="mb-0">25</p>
+                                    <p id="session-length" className="mb-0">{state.sessionLength}</p>
                                 </div>
 
 
-                                <svg id="session-increment" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16">
+                                <svg onClick={() => incrementValue(2)} id="session-increment" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16">
                                     <path d="M16 8A8 8 0 1 0 0 8a8 8 0 0 0 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"/>
                                 </svg>
                             </div>
@@ -61,7 +86,7 @@ function Container() {
 
                     <div className="timer border border-dark d-flex flex-column justify-content-center align-items-center text-center">
                         <h3 id="timer-label">Session</h3>
-                        <div id="time-left" className="current-time">25:00</div>
+                        <div id="time-left" className="current-time">{state.sessionLength}:00</div>
                     </div>
 
                     <div className="timer-controls d-flex pl-3 pr-3 justify-content-center">
