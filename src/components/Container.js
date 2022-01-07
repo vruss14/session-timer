@@ -12,7 +12,6 @@ class Container extends React.Component {
         timerCount: 25 * 60,
         currentType: 'Session',
         timerStatus: 'Paused',
-        timer: undefined
       }
 
       this.incrementValue = this.incrementValue.bind(this);
@@ -22,20 +21,32 @@ class Container extends React.Component {
     }
 
     incrementValue(type) {
-        if(type === 1 && this.state.breakLength <=60 && this.state.currentType === 'Break') {
-            this.setState({...this.state, breakLength: this.state.breakLength + 1});
-        } else if(type === 2 && this.state.sessionLength <= 60 && this.state.currentType === 'Session') {
-            this.setState({...this.state, sessionLength: this.state.sessionLength + 1});
+        if(type === 1 && this.state.breakLength < 60 && this.state.currentType === 'Break') {
+            this.setState({
+                breakLength: this.state.breakLength + 1,
+                timerCount: ((this.state.breakLength + 1) * 60)
+            });
+        } else if(type === 2 && this.state.sessionLength < 60 && this.state.currentType === 'Session') {
+            this.setState({
+                sessionLength: this.state.sessionLength + 1,
+                timerCount: ((this.state.sessionLength + 1) * 60)
+            });
         } else {
             return;
         }
     }
 
     decrementValue(type) {
-        if(type === 1 && this.state.breakLength >= 0 && this.state.currentType === 'Break') {
-            this.setState({...this.state, breakLength: this.state.breakLength - 1});
-        } else if(type === 2 && this.state.sessionLength >= 0 && this.state.currentType === 'Session') {
-            this.setState({...this.state, sessionLength: this.state.sessionLength - 1});
+        if(type === 1 && this.state.breakLength > 0 && this.state.currentType === 'Break') {
+            this.setState({
+                breakLength: this.state.breakLength - 1,
+                timerCount: ((this.state.breakLength - 1) * 60)
+            });        
+        } else if(type === 2 && this.state.sessionLength > 0 && this.state.currentType === 'Session') {
+            this.setState({
+                sessionLength: this.state.sessionLength - 1,
+                timerCount: ((this.state.sessionLength - 1) * 60)
+            });        
         } else {
             return;
         }
@@ -59,9 +70,17 @@ class Container extends React.Component {
         } else {
             this.setState({timerStatus: 'Active'});
             this.timer = setInterval(() => {
-                this.setState({
-                    timerCount: this.state.timerCount - 1
-                })
+                if(this.state.timerCount === 0) {
+                    console.log(this.state);
+                    this.setState({
+                        currentType: this.state.currentType === 'Session' ? 'Break': 'Session',
+                        timerCount: (this.state.currentType === 'Session') ? (this.state.breakLength * 60) : (this.state.sessionLength * 60)
+                    })
+                } else {
+                    this.setState({
+                        timerCount: this.state.timerCount - 1
+                    })
+                }
             }, 1000);
         }
     }
